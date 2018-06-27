@@ -5,11 +5,13 @@
  */
 package se.du.instagramdatacollector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import se.du.instagramdatacollector.dto.Country;
 
 /**
  *
@@ -34,6 +36,17 @@ public class HibernateQuery {
             }
         }
         session.close();
+    }
+
+    public static List get(String className) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        if (className.equals("Country")) {
+            List<Country> list = session.createCriteria(Country.class).list();
+            session.close();
+            return list;
+            
+        }
+        return new ArrayList<>();
 
     }
 }

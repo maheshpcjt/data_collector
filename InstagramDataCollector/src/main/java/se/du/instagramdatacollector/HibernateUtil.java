@@ -9,6 +9,7 @@ package se.du.instagramdatacollector;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
+import se.du.instagramdatacollector.dto.City;
 import se.du.instagramdatacollector.dto.Instagram;
 import se.du.instagramdatacollector.dto.Comment;
 import se.du.instagramdatacollector.dto.Country;
@@ -27,7 +28,7 @@ public class HibernateUtil {
         try {
             // Create the SessionFactory from standard (hibernate.cfg.xml) 
             // config file.
-            sessionFactory = new AnnotationConfiguration().configure().addAnnotatedClass(Country.class).buildSessionFactory();
+            sessionFactory = new AnnotationConfiguration().configure().addAnnotatedClass(Country.class).addAnnotatedClass(City.class).buildSessionFactory();
         } catch (Throwable ex) {
             // Log the exception. 
             System.err.println("Initial SessionFactory creation failed." + ex);

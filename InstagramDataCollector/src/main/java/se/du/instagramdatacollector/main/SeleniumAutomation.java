@@ -10,15 +10,18 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.hibernate.Hibernate;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import se.du.instagramdatacollector.HibernateQuery;
+import se.du.instagramdatacollector.dto.City;
 import se.du.instagramdatacollector.dto.Country;
 
 /**
@@ -40,6 +43,7 @@ public class SeleniumAutomation {
     public static void main(String[] args) {
         openDriver();
         getCountry();
+        getCity();
         closeDriver();
     }
 
@@ -51,6 +55,7 @@ public class SeleniumAutomation {
         try {
             try {
                 while (webDriver.findElement(By.className(COUNTRY_CLASS)).isEnabled()) {
+                    TimeUnit.SECONDS.sleep(5);
                     webDriver.findElement(By.className(COUNTRY_CLASS)).click();
                 }
             } catch (NoSuchElementException e) {
@@ -64,9 +69,7 @@ public class SeleniumAutomation {
 
             for (Element country : locationCountries) {
                 String name = country.getElementsByTag("a").text();
-                System.out.println(name);
                 String url = country.getElementsByTag("a").first().attr("href");
-                System.out.println(url);
                 countries.add(new Country(name, url));
             }
 
@@ -80,5 +83,43 @@ public class SeleniumAutomation {
     public static void closeDriver() {
         webDriver.close();
         webDriver.quit();
+    }
+
+    public static void getCity() {
+        List<Country> countries = HibernateQuery.get("Country");
+
+        for (Country country : countries) {
+            try {
+                webDriver.get(BASE_URL + country.getUrl());
+                try {
+                    while (webDriver.findElement(By.className(COUNTRY_CLASS)).isEnabled()) {
+                        TimeUnit.SECONDS.sleep(2);
+                        ((JavascriptExecutor)webDriver).executeScript("window.scrollTo(0,document.body.scrollHeight)");
+                        webDriver.findElement(By.className(COUNTRY_CLASS)).click();
+                    }
+                } catch (NoSuchElementException e) {
+
+                }
+                TimeUnit.SECONDS.sleep(5);
+                String pageSource = webDriver.getPageSource();
+                Document instagramLocationPage = Jsoup.parse(pageSource);
+                Elements locationCities = instagramLocationPage.getElementsByClass(COUNTRY_LI);
+                List<Object> cities = new ArrayList<>();
+                for (Element city : locationCities) {
+                    String name = city.getElementsByTag("a").text();
+                    System.out.println(name);
+                    String url = city.getElementsByTag("a").first().attr("href");
+                    System.out.println(url);
+
+                    cities.add(new City(country, name, url));
+                }
+
+                HibernateQuery.add(cities);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(SeleniumAutomation.class.getName()).log(Level.SEVERE, null, ex);
+
+            }
+        }
+
     }
 }

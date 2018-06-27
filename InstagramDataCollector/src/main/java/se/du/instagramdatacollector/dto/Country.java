@@ -31,6 +31,15 @@ public class Country implements Serializable {
         this.url = url;
     }
 
+    public Country() {
+    }
+
+    public Country(int id, String name, String url) {
+        this.id = id;
+        this.name = name;
+        this.url = url;
+    }
+
     public int getId() {
         return id;
     }
