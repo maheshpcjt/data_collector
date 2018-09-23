@@ -13,6 +13,7 @@ import se.du.instagramdatacollector.dto.City;
 import se.du.instagramdatacollector.dto.Instagram;
 import se.du.instagramdatacollector.dto.Comment;
 import se.du.instagramdatacollector.dto.Country;
+import se.du.instagramdatacollector.dto.Location;
 
 /**
  * Hibernate Utility class with a convenient method to get Session Factory
@@ -28,7 +29,13 @@ public class HibernateUtil {
         try {
             // Create the SessionFactory from standard (hibernate.cfg.xml) 
             // config file.
-            sessionFactory = new AnnotationConfiguration().configure().addAnnotatedClass(Country.class).addAnnotatedClass(City.class).buildSessionFactory();
+            sessionFactory = new AnnotationConfiguration().configure()
+                    .addAnnotatedClass(Country.class)
+                    .addAnnotatedClass(City.class)
+                    .addAnnotatedClass(Location.class)
+                    .addAnnotatedClass(Instagram.class)
+                    .addAnnotatedClass(Comment.class)
+                    .buildSessionFactory();
         } catch (Throwable ex) {
             // Log the exception. 
             System.err.println("Initial SessionFactory creation failed." + ex);

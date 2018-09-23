@@ -11,7 +11,11 @@ import java.util.List;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
+import se.du.instagramdatacollector.dto.City;
 import se.du.instagramdatacollector.dto.Country;
+import se.du.instagramdatacollector.dto.Instagram;
+import se.du.instagramdatacollector.dto.Location;
 
 /**
  *
@@ -44,9 +48,34 @@ public class HibernateQuery {
             List<Country> list = session.createCriteria(Country.class).list();
             session.close();
             return list;
-            
+
+        }
+        if (className.equals("City")) {
+            List<City> list = session.createCriteria(City.class).list();
+            session.close();
+            return list;
+
+        }
+
+        if (className.equals("Location")) {
+            List<Location> list = session.createCriteria(Location.class).add(Restrictions.between("id", 1435730, 1436729)).list();
+            session.close();
+            return list;
+
         }
         return new ArrayList<>();
 
+    }
+
+    public static boolean isAvalableInstagram(String image) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Instagram instagram = (Instagram) session.createCriteria(Instagram.class).add(Restrictions.eq("image", image)).uniqueResult();
+        return instagram != null && instagram.getId() >= 1;
+    }
+
+    public static List getInstagram(Location location) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        List<Location> list = session.createCriteria(Instagram.class).add(Restrictions.eq("location", location)).list();
+        return list;
     }
 }

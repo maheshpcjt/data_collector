@@ -8,9 +8,12 @@ package se.du.instagramdatacollector.dto;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 /**
  *
@@ -20,11 +23,18 @@ import javax.persistence.Id;
 public class Comment implements Serializable {
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
+    @Column(name="comment",columnDefinition="LONGTEXT")
     private String comment;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="instagram_id", nullable=false)
+    private Instagram instagram;
     
+    
+    public Comment() {
+    }
     
     public int getId() {
         return id;
@@ -40,6 +50,23 @@ public class Comment implements Serializable {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Comment(String comment) {
+        this.comment = comment;
+    }
+
+    public Instagram getInstagram() {
+        return instagram;
+    }
+
+    public void setInstagram(Instagram instagram) {
+        this.instagram = instagram;
+    }
+
+    public Comment(String comment, Instagram instagram) {
+        this.comment = comment;
+        this.instagram = instagram;
     }
     
     
